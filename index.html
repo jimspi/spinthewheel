@@ -3,7 +3,135 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Spin">
+<meta name="theme-color" content="#0e0e12">
+<link rel="apple-touch-icon" id="touchIcon">
+<link rel="icon" type="image/png" id="favicon">
 <title>Spin The Wheel</title>
+<script>
+(function(){
+  var s = 180, c = document.createElement('canvas');
+  c.width = s; c.height = s;
+  var x = c.getContext('2d'), cx = s/2, cy = s/2, r = s/2 - 8;
+
+  // Background
+  x.fillStyle = '#0e0e12';
+  x.beginPath();
+  x.roundRect(0, 0, s, s, 36);
+  x.fill();
+
+  // Shadow under wheel
+  x.save();
+  x.shadowColor = 'rgba(0,0,0,0.6)';
+  x.shadowBlur = 14;
+  x.shadowOffsetY = 4;
+  x.beginPath();
+  x.arc(cx, cy, r, 0, Math.PI*2);
+  x.fillStyle = '#111';
+  x.fill();
+  x.restore();
+
+  // Wheel segments
+  var cols = ['#e94560','#2d7ff9','#18bfbf','#f072a9'];
+  var arc = Math.PI*2/4;
+  var tilt = -Math.PI/6; // slight rotation offset
+  cols.forEach(function(col, i) {
+    var sa = tilt + i * arc, ea = sa + arc;
+    // Base color
+    x.beginPath();
+    x.moveTo(cx, cy);
+    x.arc(cx, cy, r, sa, ea);
+    x.closePath();
+    x.fillStyle = col;
+    x.fill();
+    // 3D gradient overlay per segment
+    var grd = x.createRadialGradient(cx - r*0.3, cy - r*0.3, 0, cx, cy, r);
+    grd.addColorStop(0, 'rgba(255,255,255,0.25)');
+    grd.addColorStop(0.5, 'rgba(255,255,255,0.05)');
+    grd.addColorStop(1, 'rgba(0,0,0,0.2)');
+    x.beginPath();
+    x.moveTo(cx, cy);
+    x.arc(cx, cy, r, sa, ea);
+    x.closePath();
+    x.fillStyle = grd;
+    x.fill();
+    // Divider lines
+    x.beginPath();
+    x.moveTo(cx, cy);
+    x.lineTo(cx + Math.cos(sa)*r, cy + Math.sin(sa)*r);
+    x.strokeStyle = '#0e0e12';
+    x.lineWidth = 2.5;
+    x.stroke();
+  });
+
+  // Outer ring (3D rim)
+  x.beginPath();
+  x.arc(cx, cy, r, 0, Math.PI*2);
+  x.strokeStyle = '#222';
+  x.lineWidth = 4;
+  x.stroke();
+  x.beginPath();
+  x.arc(cx, cy, r - 2, 0, Math.PI*2);
+  x.strokeStyle = 'rgba(255,255,255,0.08)';
+  x.lineWidth = 1.5;
+  x.stroke();
+
+  // Gloss highlight (top-left shine)
+  var gloss = x.createRadialGradient(cx - r*0.35, cy - r*0.35, 0, cx, cy, r);
+  gloss.addColorStop(0, 'rgba(255,255,255,0.3)');
+  gloss.addColorStop(0.4, 'rgba(255,255,255,0.05)');
+  gloss.addColorStop(1, 'rgba(0,0,0,0)');
+  x.beginPath();
+  x.arc(cx, cy, r - 3, 0, Math.PI*2);
+  x.fillStyle = gloss;
+  x.fill();
+
+  // Center hub - outer ring
+  x.beginPath();
+  x.arc(cx, cy, 18, 0, Math.PI*2);
+  var hubGrd = x.createRadialGradient(cx - 4, cy - 4, 0, cx, cy, 18);
+  hubGrd.addColorStop(0, '#333');
+  hubGrd.addColorStop(1, '#0e0e12');
+  x.fillStyle = hubGrd;
+  x.fill();
+  x.strokeStyle = '#555';
+  x.lineWidth = 2;
+  x.stroke();
+
+  // Center hub - inner dot
+  x.beginPath();
+  x.arc(cx, cy, 6, 0, Math.PI*2);
+  var dotGrd = x.createRadialGradient(cx - 2, cy - 2, 0, cx, cy, 6);
+  dotGrd.addColorStop(0, '#fff');
+  dotGrd.addColorStop(1, '#888');
+  x.fillStyle = dotGrd;
+  x.fill();
+
+  // Pointer triangle at top
+  x.save();
+  x.shadowColor = 'rgba(0,0,0,0.5)';
+  x.shadowBlur = 4;
+  x.shadowOffsetY = 1;
+  x.beginPath();
+  x.moveTo(cx, cy - r + 14);
+  x.lineTo(cx - 9, cy - r - 6);
+  x.lineTo(cx + 9, cy - r - 6);
+  x.closePath();
+  var pGrd = x.createLinearGradient(cx, cy - r - 6, cx, cy - r + 14);
+  pGrd.addColorStop(0, '#ffffff');
+  pGrd.addColorStop(1, '#cccccc');
+  x.fillStyle = pGrd;
+  x.fill();
+  x.restore();
+
+  // Set icons
+  var url = c.toDataURL('image/png');
+  document.getElementById('touchIcon').href = url;
+  document.getElementById('favicon').href = url;
+})();
+</script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
